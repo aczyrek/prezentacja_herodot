@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wprowadzenie do Slacka i Dysku Google - HeroDOT</title>
+    <!-- Tailwind CSS CDN for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #FFFFFF; /* White background from Herodot.com */
+            color: #333333; /* Dark gray for general text */
+            overflow-x: hidden; /* Prevent horizontal scrolling */
+            position: relative; /* Needed for absolute positioning of background circles */
+        }
+        .presentation-container {
+            width: 90%;
+            max-width: 1000px;
+            background-color: rgba(240, 240, 240, 0.9); /* Light gray, slightly transparent */
+            border-radius: 1rem; /* Rounded corners */
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1); /* Lighter shadow */
+            padding: 2rem;
+            min-height: 600px; /* Minimum height for better visual consistency */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            z-index: 1; /* Ensure content is above background circles */
+        }
+        .slide {
+            display: none; /* Hidden by default - FIX: Ensures only one slide is shown at a time */
+            animation: fadeIn 0.5s ease-in-out;
+            height: 100%;
+            position: relative; /* Added for positioning inner decorations */
+        }
+        .slide.active {
+            display: flex; /* Active slide is visible and uses flexbox for layout */
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 1rem;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+            width: 100%;
+            padding: 0 1rem;
+        }
+        .nav-button {
+            background-color: #3B82F6; /* Blue accent color */
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+        .nav-button:hover {
+            background-color: #2563EB; /* Darker blue on hover */
+            transform: translateY(-2px);
+        }
+        .nav-button:active {
+            transform: translateY(0);
+        }
+        .herodot-text-logo {
+            font-family: 'Inter', sans-serif;
+            font-size: 2.5rem; /* Large font size */
+            font-weight: 700; /* Bold */
+            color: #1F2937; /* Dark gray for text */
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+            margin-bottom: 1rem;
+            line-height: 1; /* Adjust line height if needed */
+        }
+        .slogan {
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: #4B5563; /* Medium gray for slogan */
+            margin-top: 1rem;
+        }
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: #1F2937; /* Darker gray for titles */
+        }
+        h2 {
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #1F2937; /* Darker gray for titles */
+        }
+        p, ul, ol {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+            max-width: 800px;
+            text-align: left;
+            color: #333333; /* Dark gray for general text */
+        }
+        ul, ol {
+            list-style-position: inside;
+            padding-left: 1.5rem;
+        }
+        li {
+            margin-bottom: 0.5rem;
+        }
+        .icon {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            margin-right: 0.5rem;
+            vertical-align: middle;
+            color: #3B82F6; /* Blue accent for icons */
+        }
+        .ai-section {
+            background-color: rgba(255, 255, 255, 0.7); /* Lighter transparent white */
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            width: 100%;
+            max-width: 700px;
+            text-align: left;
+            color: #1F2937; /* Dark text for AI section */
+        }
+        .ai-section textarea, .ai-section input {
+            width: 100%;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            border: 1px solid rgba(0, 0, 0, 0.2);
+            background-color: rgba(255, 255, 255, 0.9); /* Very light background for inputs */
+            color: #1F2937; /* Dark text for inputs */
+            margin-top: 0.5rem;
+            margin-bottom: 1rem;
+            resize: vertical;
+        }
+        .ai-section button {
+            background-color: #20C997; /* Vibrant green for AI buttons */
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+        .ai-section button:hover {
+            background-color: #059669; /* Darker green on hover */
+            transform: translateY(-2px);
+        }
+        .ai-section button:active {
+            transform: translateY(0);
+        }
+        .ai-output {
+            background-color: rgba(255, 255, 255, 0.8); /* Light transparent white */
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-top: 1rem;
+            min-height: 50px;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            font-size: 0.95rem;
+            white-space: pre-wrap; /* Preserve whitespace and wrap text */
+            word-wrap: break-word; /* Break long words */
+            color: #1F2937; /* Dark text for AI output */
+        }
+        .loading-spinner {
+            border: 4px solid rgba(0, 0, 0, 0.3);
+            border-top: 4px solid #3B82F6; /* Blue spinner */
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            vertical-align: middle;
+            margin-left: 10px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .presentation-container {
+                width: 95%;
+                padding: 1rem;
+                min-height: 500px;
+            }
+            h1 {
+                font-size: 2rem;
+            }
+            h2 {
+                font-size: 1.75rem;
+            }
+            p, ul, ol {
+                font-size: 1rem;
+            }
+            .nav-button {
+                padding: 0.6rem 1rem;
+                font-size: 0.9rem;
+            }
+            .nav-buttons {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: center;
+            }
+            .herodot-text-logo {
+                font-size: 2rem;
+            }
+        }
+        .step-image {
+            max-width: 80%; /* Ensure images don't overflow */
+            height: auto;
+            margin: 1rem auto; /* Center images and add vertical spacing */
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Lighter shadow for images */
+        }
+        .text-accent { /* New class for accent text */
+            color: #3B82F6; /* Blue accent color */
+        }
+
+        /* Background Circles Styling */
+        .bg-circle {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.7; /* Increased opacity for much better visibility */
+            filter: blur(15px); /* Slightly less blur for clearer shapes */
+            z-index: 0; /* Place them behind content */
+        }
+        .bg-circle-blue {
+            background-color: #3B82F6; /* Blue */
+            width: 350px;
+            height: 350px;
+            top: -120px;
+            left: -120px;
+        }
+        .bg-circle-green {
+            background-color: #20C997; /* Green */
+            width: 450px;
+            height: 450px;
+            bottom: -180px;
+            right: -180px;
+        }
+        .bg-circle-yellow {
+            background-color: #D9ED5F; /* Yellow/Lime */
+            width: 300px;
+            height: 300px;
+            top: 5%;
+            left: 70%;
+            transform: translateX(-50%);
+        }
+        /* Responsive adjustments for background circles */
+        @media (max-width: 768px) {
+            .bg-circle-blue {
+                width: 200px;
+                height: 200px;
+                top: -50px;
+                left: -50px;
+            }
+            .bg-circle-green {
+                width: 300px;
+                height: 300px;
+                bottom: -100px;
+                right: -100px;
+            }
+            .bg-circle-yellow {
+                width: 180px;
+                height: 180px;
+                top: 10%;
+                left: 80%;
+                transform: translateX(-50%);
+            }
+        }
+
+        /* Slide Decorations */
+        .slide-decoration {
+            position: absolute;
+            width: 80px; /* Increased size */
+            height: 80px; /* Increased size */
+            border-radius: 50%; /* Default to circle */
+            opacity: 0.3; /* Increased opacity */
+            filter: blur(8px); /* Slightly less blur */
+            z-index: -1; /* Behind content */
+        }
+        .slide-decoration.top-left {
+            top: 30px;
+            left: 30px;
+            border-radius: 50%; /* Circle */
+        }
+        .slide-decoration.bottom-right {
+            bottom: 30px;
+            right: 30px;
+            border-radius: 20px; /* Rounded square */
+        }
+        .slide-decoration.middle-right {
+            top: 50%;
+            right: 20px;
+            transform: translateY(-50%);
+            border-radius: 50%; /* Circle */
+        }
+        /* Custom colors for Tailwind */
+        .bg-blue-500-custom { background-color: #3B82F6; }
+        .bg-green-500-custom { background-color: #20C997; }
+        .bg-yellow-500-custom { background-color: #D9ED5F; }
+    </style>
+</head>
+<body>
+    <!-- Background Circles -->
+    <div class="bg-circle bg-circle-blue"></div>
+    <div class="bg-circle bg-circle-green"></div>
+    <div class="bg-circle bg-circle-yellow"></div>
+
+    <div class="presentation-container">
+        <!-- Slide 1: Tytułowy -->
+        <div id="slide1" class="slide active">
+            <div class="slide-decoration top-left bg-blue-500-custom"></div>
+            <div class="slide-decoration bottom-right bg-green-500-custom"></div>
+            <div class="slide-decoration middle-right bg-yellow-500-custom"></div>
+            <div class="herodot-text-logo">hero/dot</div>
+            <h1 class="text-black">Wprowadzenie do Slacka i Dysku Google dla <span class="text-accent">nowych użytkowników</span></h1>
+            <p class="text-gray-700">Twoje narzędzia do efektywnej komunikacji i współpracy z HeroDOT.</p>
+            <p class="slogan">Code your vision</p>
+            <div class="nav-buttons justify-center">
+                <button class="nav-button" onclick="showSlide(2)">Rozpocznij Prezentację</button>
+            </div>
+        </div>
+
+        <!-- Slide 2: Powitanie i Cel Prezentacji -->
+        <div id="slide2" class="slide">
+            <div class="slide-decoration top-left bg-green-500-custom"></div>
+            <div class="slide-decoration bottom-right bg-yellow-500-custom"></div>
+            <div class="slide-decoration middle-right bg-blue-500-custom"></div>
+            <h2 class="text-black">Witaj w <span class="text-accent">HeroDOT</span>!</h2>
+            <p class="text-center">Cieszymy się, że jesteś z nami.</p>
+            <p class="text-center">Cel tej prezentacji: Poznaj Slacka i Dysk Google – kluczowe narzędzia do sprawnej komunikacji i współpracy z zespołem HeroDOT oraz w ramach Twojej organizacji.</p>
+            <div class="nav-buttons">
+                <button class="nav-button" onclick="showSlide(1)">Poprzedni</button>
+                <button class="nav-button" onclick="showSlide(3)">Dalej</button>
+            </div>
+        </div>
+
+        <!-- Slide 3: Co to jest Slack? (Kluczowe Informacje) -->
+        <div id="slide3" class="slide">
+            <div class="slide-decoration top-left bg-yellow-500-custom"></div>
+            <div class="slide-decoration bottom-right bg-blue-500-custom"></div>
+            <div class="slide-decoration middle-right bg-green-500-custom"></div>
+            <h2 class="text-black">Slack: Szybka i efektywna komunikacja zespołowa</h2>
+            <ul class="list-disc text-left">
+                <li><span class="icon">&#9993;</span> Zastępuje maile w wewnętrznej komunikacji.</li>
+                <li><span class="icon">&#128172;</span> Kanały (tematyczne rozmowy), Wiadomości Bezpośrednie, Grupy.</li>
+                <li><span class="icon">&#128279;</span> Możliwość integracji z innymi narzędziami (np. Dysk Google).</li>
+            </ul>
+            <div class="nav-buttons">
+                <button class="nav-button" onclick="showSlide(2)">Poprzedni</button>
+                <button class="nav-button" onclick="showSlide(4)">Dalej</button>
+            </div>
+        </div>
+
+        <!-- Slide 4: Jak Zalogować się do Slacka? (Kroki Krok po Kroku) -->
+        <div id="slide4" class="slide">
+            <div class="slide-decoration top-left bg-blue-500-custom"></div>
+            <div class="slide-decoration bottom-right bg-green-500-custom"></div>
+            <div class="slide-decoration middle-right bg-yellow-500-custom"></div>
+            <h2 class="text-black">Pierwsze Kroki w Slacku</h2>
+            <ol class="list-decimal text-left w-full max-w-2xl">
+                <li class="mb-4">
+                    <span class="icon">&#128236;</span> <strong>Otrzymaj zaproszenie na swoją skrzynkę e-mail.</strong> Proces rozpoczyna się od wiadomości z zaproszeniem do obszaru roboczego Slacka.
+                    <img src="https://i.postimg.cc/vTKS5mH4/Zrzut-ekranu-2025-07-25-o-20-51-17.png" alt="Obraz skrzynki odbiorczej z wiadomością od Slacka" class="step-image">
+                </li>
+                <li class="mb-4">
+                    <span class="icon">&#128073;</span> <strong>Kliknij link w zaproszeniu.</strong> Otwórz wiadomość i kliknij przycisk "OPEN SLACK" (lub podobny link), aby przejść do strony logowania/rejestracji.
+                    <img src="https://i.postimg.cc/X7TzJXzh/Zrzut-ekranu-2025-07-25-o-20-51-30.png" alt="Obraz wiadomości e-mail z przyciskiem OPEN SLACK" class="step-image">
+                </li>
+                <li class="mb-4">
+                    <span class="icon">&#128273;</span> <strong>Wprowadź swój adres e-mail i wybierz metodę logowania.</strong> Na stronie logowania wpisz swój adres e-mail (np. służbowy) i wybierz "Sign In With Email" lub zaloguj się przez Google/Apple.
+                    <img src="https://i.postimg.cc/3rfqstC3/Zrzut-ekranu-2025-07-25-o-20-53-29.png" alt="Obraz strony logowania do Slacka" class="step-image">
+                </li>
+                <li class="mb-4">
+                    <span class="icon">&#128226;</span> <strong>Weryfikacja e-maila (kod weryfikacyjny).</strong> Slack wyśle na Twój adres e-mail kod weryfikacyjny. Wpisz go w odpowiednie pola na stronie lub kliknij link w e-mailu, aby automatycznie się zalogować.
+                    <img src="https://i.postimg.cc/TPqd0zbd/Zrzut-ekranu-2025-07-25-o-20-55-10.png" alt="Obraz strony weryfikacji kodu z e-maila" class="step-image">
+                </li>
+                <li class="mb-4">
+                    <span class="icon">&#128272;</span> <strong>Dodatkowa autoryzacja (2FA) - jeśli wymagana.</strong> W przypadku HeroDOT, może być wymagane dodatkowe uwierzytelnianie. Kliknij przycisk "Authenticate" na stronie.
+                    <img src="https://i.postimg.cc/d37K0Zrz/Zrzut-ekranu-2025-07-25-o-22-17-12.png" alt="Obraz strony z dodatkową autoryzacją (2FA)" class="step-image">
+                </li>
+                <li class="mb-4">
+                    <span class="icon">&#128241;</span> <strong>Wprowadź kod z SMS.</strong> Na kolejnej stronie wprowadź kod autoryzacyjny, który zostanie wysłany na Twój telefon (SMS).
+                    <img src="https://i.postimg.cc/RFgX70Vc/Zrzut-ekranu-2025-07-25-o-22-18-32.png" alt="Obraz strony wprowadzania kodu SMS" class="step-image">
+                </li>
+                <li class="mb-4">
+                    <span class="icon">&#128187;</span> <strong>Otwórz aplikację Slack.</strong> Po pomyślnej autoryzacji, może pojawić się okno z pytaniem, czy chcesz otworzyć aplikację desktopową Slacka. Kliknij "Otwórz Slack", aby kontynuować.
+                    <img src="https://i.postimg.cc/zX47qMcF/Zrzut-ekranu-2025-07-25-o-22-37-56.png" alt="Obraz okna z pytaniem o otwarcie aplikacji Slack" class="step-image">
+                </li>
+            </ol>
+            <div class="nav-buttons">
+                <button class="nav-button" onclick="showSlide(3)">Poprzedni</button>
+                <button class="nav-button" onclick="showSlide(5)">Dalej</button>
+            </div>
+        </div>
+
+        <!-- Slide 5: Podstawy Użytkowania Slacka – Nawigacja (Wizualne Wskazówki) -->
+        <div id="slide5" class="slide">
+            <div class="slide-decoration top-left bg-green-500-custom"></div>
+            <div class="slide-decoration bottom-right bg-yellow-500-custom"></div>
+            <div class="slide-decoration middle-right bg-blue-500-custom"></div>
+            <h2 class="text-black">Orientacja w Slacku: Gdzie co jest?</h2>
+            <ul class="list-disc text-left w-full max-w-2xl">
+                <li class="mb-4">
+                    <span class="icon">&#128467;</span> <strong>Lewy panel:</strong> Kanały, Wiadomości Bezpośrednie, Aplikacje.
+                    <img src="https://i.postimg.cc/CMbN3L31/Zrzut-ekranu-2025-07-26-o-12-41-33.png" alt="Obraz lewego panelu w Slacku" class="step-image">
+                </li>
+                <li class="mb-4">
+                    <span class="icon">&#128465;</span> <strong>Główny obszar:</strong> Konwersacje, Pliki, Przepięte elementy.
+                    <img src="https://i.postimg.cc/4N5132NR/Zrzut-ekranu-2025-07-26-o-12-41-35.png" alt="Obraz głównego obszaru konwersacji w Slacku" class="step-image">
+                </li>
+                <li class="mb-4">
+                    <span class="icon">&#128466;</span> <strong>Prawy panel (Detale):</strong> Informacje o kanale, Lista członków, Pliki z kanału.
+                    <img src="https://i.postimg.cc/htt1Q8fz/Zrzut-ekranu-2025-07-26-o-12-41-37.png" alt="Obraz prawego panelu z detalami kanału w Slacku" class="step-image">
+                </li>
+            </ul>
+            <div class="nav-buttons">
+                <button class="nav-button" onclick="showSlide(4)">Poprzedni</button>
+                <button class="nav-button" onclick="showSlide(6)">Dalej</button>
+            </div>
+        </div>
+
+        <!-- Slide 6: Podstawy Użytkowania Slacka – Komunikacja (Praktyczne Wskazówki) -->
+        <div id="slide6" class="slide">
+            <div class="slide-decoration top-left bg-yellow-500-custom"></div>
+            <div class="slide-decoration bottom-right bg-blue-500-custom"></div>
+            <div class="slide-decoration middle-right bg-green-500-custom"></div>
+            <h2 class="text-black">Komunikacja w Slacku: Bądź efektywny!</h2>
+            <ul class="list-disc text-left">
+                <li><span class="icon">&#128172;</span> <strong>Kanały:</strong> Dołączanie, tworzenie, wysyłanie wiadomości.</li>
+                <li><span class="icon">&#128266;</span> <strong>Oznaczanie osób:</strong> `@nazwa_użytkownika` (aby oznaczyć konkretną osobę).</li>
+                <li><span class="icon">&#9888;&#65039;</span> <strong>Pamiętaj:</strong> `@channel` lub `@here` używaj z ostrożnością (informacja dla wszystkich!).</li>
+                <li><span class="icon">&#128172;</span> <strong>Wątki (Threads):</strong> Odpowiadaj w wątkach, aby utrzymać porządek w rozmowach.</li>
+                <li><span class="icon">&#128100;</span> <strong>Wiadomości Bezpośrednie (DMs):</strong> Rozmowy jeden na jeden lub w małych grupach.</li>
+                <li><span class="icon">&#128522;</span> <strong>Reakcje:</strong> Szybkie reagowanie na wiadomości za pomocą emoji.</li>
+                <li><span class="icon">&#128206;</span> <strong>Udostępnianie plików:</strong> Przeciągnij i upuść lub użyj ikony spinacza.</li>
+            </ul>
+            <div class="nav-buttons">
+                <button class="nav-button" onclick="showSlide(5)">Poprzedni</button>
+                <button class="nav-button" onclick="showSlide(7)">Dalej</button>
+            </div>
+        </div>
+
+        <!-- Slide 7: Inteligentna Pomoc z Gemini AI -->
+        <div id="slide7" class="slide">
+            <div class="slide-decoration top-left bg-blue-500-custom"></div>
+            <div class="slide-decoration bottom-right bg-green-500-custom"></div>
+            <div class="slide-decoration middle-right bg-yellow-500-custom"></div>
+            <h2 class="text-black">Inteligentna Pomoc z Gemini AI ✨</h2>
+            <p class="text-center">Wykorzystaj sztuczną inteligencję do usprawnienia komunikacji!</p>
+
+            <div class="ai-section">
+                <h3 class="text-xl font-semibold mb-2 text-accent">Generowanie Wiadomości Slack</h3>
+                <p class="text-sm text-gray-700 mb-2">Wpisz temat lub słowa kluczowe, aby wygenerować propozycję wiadomości.</p>
+                <input type="text" id="slackMessageInput" placeholder="Np. 'Spotkanie zespołu, agenda, godzina 10:00'" class="w-full p-2 rounded-md bg-gray-100 text-gray-800 border border-gray-300">
+                <button class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded-lg mt-2 transition duration-200" onclick="generateSlackMessage()">Generuj Wiadomość ✨</button>
+                <div id="slackMessageOutput" class="ai-output mt-4"></div>
+                <div id="slackMessageLoading" class="loading-spinner hidden"></div>
+            </div>
+
+            <div class="ai-section mt-6">
+                <h3 class="text-xl font-semibold mb-2 text-accent">Streszczanie Tekstu</h3>
+                <p class="text-sm text-gray-700 mb-2">Wklej dłuższy tekst, aby uzyskać jego krótkie streszczenie.</p>
+                <textarea id="summaryInput" rows="5" placeholder="Wklej tekst do streszczenia..." class="w-full p-2 rounded-md bg-gray-100 text-gray-800 border border-gray-300"></textarea>
+                <button class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded-lg mt-2 transition duration-200" onclick="summarizeText()">Streszczaj Tekst ✨</button>
+                <div id="summaryOutput" class="ai-output mt-4"></div>
+                <div id="summaryLoading" class="loading-spinner hidden"></div>
+            </div>
+
+            <div class="ai-section mt-6">
+                <h3 class="text-xl font-semibold mb-2 text-accent">Generowanie Pomysłów na Dokumenty Google Drive</h3>
+                <p class="text-sm text-gray-700 mb-2">Wpisz temat dokumentu, aby otrzymać sugestie na jego strukturę lub zawartość.</p>
+                <input type="text" id="documentIdeasInput" placeholder="Np. 'Raport kwartalny, cele sprzedażowe'" class="w-full p-2 rounded-md bg-gray-100 text-gray-800 border border-gray-300">
+                <button class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded-lg mt-2 transition duration-200" onclick="generateDocumentIdeas()">Generuj Pomysły ✨</button>
+                <div id="documentIdeasOutput" class="ai-output mt-4"></div>
+                <div id="documentIdeasLoading" class="loading-spinner hidden"></div>
+            </div>
+
+            <div class="nav-buttons">
+                <button class="nav-button" onclick="showSlide(6)">Poprzedni</button>
+                <button class="nav-button" onclick="showSlide(8)">Dalej</button>
+            </div>
+        </div>
+
+        <!-- Slide 8: Integracja z Dyskiem Google (Miejsce na Pliki) -->
+        <div id="slide8" class="slide">
+            <div class="slide-decoration top-left bg-green-500-custom"></div>
+            <div class="slide-decoration bottom-right bg-yellow-500-custom"></div>
+            <div class="slide-decoration middle-right bg-blue-500-custom"></div>
+            <h2 class="text-black">Dysk Google: Twoja przestrzeń na pliki w Slacku</h2>
+            <ul class="list-disc text-left w-full max-w-2xl">
+                <li><span class="icon">&#128452;</span> Dysk Google to centralna przestrzeń na pliki dla każdego kanału Slack.</li>
+                <li class="mb-4">
+                    <span class="icon">&#128269;</span> <strong>Jak znaleźć folder:</strong> W każdym kanale Slack znajdziesz przypięty link do dedykowanego folderu Google Drive.
+                    <img src="https://i.postimg.cc/bJc6nG77/Zrzut-ekranu-2025-07-26-o-12-53-21.png" alt="Obraz widoku plików w folderze Google Drive" class="step-image">
+                </li>
+                <li class="mb-4">
+                    <span class="icon">&#128275;</span> <strong>Dostęp:</strong> Kliknij link, aby przejść bezpośrednio do folderu.
+                    <img src="https://i.postimg.cc/zfRt3wcw/Zrzut-ekranu-2025-07-26-o-12-51-54.png" alt="Obraz przypiętego linku do folderu Google Drive w Slacku" class="step-image">
+                </li>
+                <li class="mb-4">
+                    <span class="icon">&#128272;</span> <strong>Uprawnienia:</strong> Możesz przeglądać, edytować i dodawać pliki (zgodnie z nadanymi uprawnieniami).
+                    <img src="https://i.postimg.cc/cHRFBxZr/Zrzut-ekranu-2025-07-26-o-12-52-40.png" alt="Obraz widoku folderu Google Drive" class="step-image">
+                </li>
+            </ul>
+            <div class="nav-buttons">
+                <button class="nav-button" onclick="showSlide(7)">Poprzedni</button>
+                <button class="nav-button" onclick="showSlide(9)">Dalej</button>
+            </div>
+        </div>
+
+        <!-- Slide 9: Dlaczego to ważne? Korzyści (Podsumowanie Wartości) -->
+        <div id="slide9" class="slide">
+            <div class="slide-decoration top-left bg-yellow-500-custom"></div>
+            <div class="slide-decoration bottom-right bg-blue-500-custom"></div>
+            <div class="slide-decoration middle-right bg-green-500-custom"></div>
+            <h2 class="text-black">Korzyści: Dlaczego to jest ważne dla Ciebie?</h2>
+            <ul class="list-disc text-left">
+                <li><span class="icon">&#127968;</span> Centralne miejsce do przechowywania dokumentów.</li>
+                <li><span class="icon">&#128274;</span> Łatwy dostęp i wspólna praca nad plikami.</li>
+                <li><span class="icon">&#128170;</span> Zwiększona przejrzystość i efektywność w pracy zespołowej.</li>
+                <li><span class="icon">&#129309;</span> Sprawniejsza współpraca z zespołem HeroDOT.</li>
+            </ul>
+            <div class="nav-buttons">
+                <button class="nav-button" onclick="showSlide(8)">Poprzedni</button>
+                <button class="nav-button" onclick="showSlide(10)">Dalej</button>
+            </div>
+        </div>
+
+        <!-- Slide 10: Pytania i Wsparcie (Kluczowe Kontakty) -->
+        <div id="slide10" class="slide">
+            <div class="slide-decoration top-left bg-blue-500-custom"></div>
+            <div class="slide-decoration bottom-right bg-green-500-custom"></div>
+            <div class="slide-decoration middle-right bg-yellow-500-custom"></div>
+            <h2 class="text-black">Potrzebujesz Pomocy? Jesteśmy dla Ciebie!</h2>
+            <p class="text-center">Masz pytania? Skontaktuj się z zespołem HeroDOT IT pod adresem <span class="text-accent">support@tisagroup.ch</span> lub na kanale <span class="text-accent">#product_support</span> w Slacku.</p>
+            <p class="text-center text-sm text-gray-700">Dodatkowe zasoby: Linki do oficjalnych stron pomocy Slacka i Google Drive (wymagają połączenia z internetem).</p>
+            <div class="nav-buttons">
+                <button class="nav-button" onclick="showSlide(9)">Poprzedni</button>
+                <button class="nav-button" onclick="showSlide(11)">Zakończ Prezentację</button>
+            </div>
+        </div>
+
+        <!-- Slide 11: Dziękujemy! -->
+        <div id="slide11" class="slide">
+            <div class="slide-decoration top-left bg-green-500-custom"></div>
+            <div class="slide-decoration bottom-right bg-yellow-500-custom"></div>
+            <div class="slide-decoration middle-right bg-blue-500-custom"></div>
+            <h1 class="text-black">Dziękujemy za uwagę!</h1>
+            <p class="text-lg text-gray-700">Życzymy owocnej pracy ze Slackiem i Dyskiem Google!</p>
+            <div class="herodot-text-logo">hero/dot</div>
+            <p class="slogan">Code your vision</p>
+            <div class="nav-buttons justify-center">
+                <button class="nav-button" onclick="showSlide(1)">Powrót do początku</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 1;
+        const totalSlides = 11;
+
+        // Function to show a specific slide
+        function showSlide(slideNumber) {
+            // Hide all slides
+            for (let i = 1; i <= totalSlides; i++) {
+                document.getElementById('slide' + i).classList.remove('active');
+            }
+            // Show the requested slide
+            document.getElementById('slide' + slideNumber).classList.add('active');
+            currentSlide = slideNumber;
+        }
+
+        // Initial display of the first slide when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            showSlide(1);
+        });
+
+        // Optional: Keyboard navigation for convenience
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' && currentSlide < totalSlides) {
+                showSlide(currentSlide + 1);
+            } else if (e.key === 'ArrowLeft' && currentSlide > 1) {
+                showSlide(currentSlide - 1);
+            }
+        });
+
+        // Placeholder for client-specific details.
+        // Users can easily replace these values.
+        const clientOrganizationName = "nowych użytkowników";
+        const clientCompanyName = "HeroDOT"; // Updated to HeroDOT
+        const companyDomain = "[domena firmy, np. @legia.pl lub @domena_klienta.com]";
+        // Zaktualizowane dane kontaktowe
+        const supportEmail = "support@tisagroup.ch";
+        const supportChannel = "#product_support";
+
+
+        // Update placeholders in the presentation
+        document.querySelectorAll('h1').forEach(el => {
+            if (el.innerHTML.includes('[Nazwa Działu/Organizacji Klienta]')) {
+                el.innerHTML = el.innerHTML.replace('[Nazwa Działu/Organizacji Klienta]', clientOrganizationName);
+            }
+        });
+        document.querySelectorAll('h2').forEach(el => {
+            if (el.innerHTML.includes('TISA Group')) { // Check for static text "TISA Group"
+                el.innerHTML = el.innerHTML.replace('TISA Group', clientCompanyName);
+            }
+            if (el.innerHTML.includes('[Nazwa Firmy Klienta]')) { // Check for placeholder
+                el.innerHTML = el.innerHTML.replace('[Nazwa Firmy Klienta]', clientCompanyName);
+            }
+        });
+        document.querySelectorAll('p').forEach(el => {
+            if (el.innerHTML.includes('TISA Group')) { // Check for static text "TISA Group"
+                el.innerHTML = el.innerHTML.replace('TISA Group', clientCompanyName);
+            }
+            if (el.innerHTML.includes('[domena firmy, np. @legia.pl lub @domena_klienta.com]')) {
+                el.innerHTML = el.innerHTML.replace('[domena firmy, np. @legia.pl lub @domena_klienta.com]', companyDomain);
+            }
+            // Użycie zaktualizowanych zmiennych dla e-maila i kanału
+            if (el.innerHTML.includes('support@tisagroup.ch')) {
+                el.innerHTML = el.innerHTML.replace('support@tisagroup.ch', supportEmail);
+            }
+            if (el.innerHTML.includes('#product_support')) {
+                el.innerHTML = el.innerHTML.replace('#product_support', supportChannel);
+            }
+        });
+
+
+        // --- Gemini API Integration Functions ---
+
+        async function generateSlackMessage() {
+            const input = document.getElementById('slackMessageInput').value;
+            const outputDiv = document.getElementById('slackMessageOutput');
+            const loadingSpinner = document.getElementById('slackMessageLoading');
+
+            if (!input.trim()) {
+                outputDiv.textContent = "Proszę wprowadzić temat lub słowa kluczowe.";
+                return;
+            }
+
+            outputDiv.textContent = ''; // Clear previous output
+            loadingSpinner.classList.remove('hidden'); // Show spinner
+
+            const prompt = `Wygeneruj krótką, profesjonalną wiadomość Slack na temat: "${input}". Wiadomość powinna być zwięzła i zawierać najważniejsze informacje.`;
+            let chatHistory = [];
+            chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+
+            const payload = { contents: chatHistory };
+            const apiKey = ""; // Canvas will provide this API key at runtime
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const result = await response.json();
+
+                if (result.candidates && result.candidates.length > 0 &&
+                    result.candidates[0].content && result.candidates[0].content.parts &&
+                    result.candidates[0].content.parts.length > 0) {
+                    const text = result.candidates[0].content.parts[0].text;
+                    outputDiv.textContent = text;
+                } else {
+                    outputDiv.textContent = "Błąd: Nie udało się wygenerować wiadomości. Spróbuj ponownie.";
+                    console.error("Unexpected API response structure:", result);
+                }
+            } catch (error) {
+                outputDiv.textContent = `Błąd sieci lub serwera: ${error.message}`;
+                console.error("Fetch error:", error);
+            } finally {
+                loadingSpinner.classList.add('hidden'); // Hide spinner
+            }
+        }
+
+        async function summarizeText() {
+            const input = document.getElementById('summaryInput').value;
+            const outputDiv = document.getElementById('summaryOutput');
+            const loadingSpinner = document.getElementById('summaryLoading');
+
+            if (!input.trim()) {
+                outputDiv.textContent = "Proszę wkleić tekst do streszczenia.";
+                return;
+            }
+
+            outputDiv.textContent = ''; // Clear previous output
+            loadingSpinner.classList.remove('hidden'); // Show spinner
+
+            const prompt = `Streszcz krótko i zwięźle następujący tekst:\n\n"${input}"`;
+            let chatHistory = [];
+            chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+
+            const payload = { contents: chatHistory };
+            const apiKey = ""; // Canvas will provide this API key at runtime
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const result = await response.json();
+
+                if (result.candidates && result.candidates.length > 0 &&
+                    result.candidates[0].content && result.candidates[0].content.parts &&
+                    result.candidates[0].content.parts.length > 0) {
+                    const text = result.candidates[0].content.parts[0].text;
+                    outputDiv.textContent = text;
+                } else {
+                    outputDiv.textContent = "Błąd: Nie udało się streścić tekstu. Spróbuj ponownie.";
+                    console.error("Unexpected API response structure:", result);
+                }
+            } catch (error) {
+                outputDiv.textContent = `Błąd sieci lub serwera: ${error.message}`;
+                console.error("Fetch error:", error);
+            } finally {
+                loadingSpinner.classList.add('hidden'); // Hide spinner
+            }
+        }
+
+        async function generateDocumentIdeas() {
+            const input = document.getElementById('documentIdeasInput').value;
+            const outputDiv = document.getElementById('documentIdeasOutput');
+            const loadingSpinner = document.getElementById('documentIdeasLoading');
+
+            if (!input.trim()) {
+                outputDiv.textContent = "Proszę wprowadzić temat dokumentu.";
+                return;
+            }
+
+            outputDiv.textContent = ''; // Clear previous output
+            loadingSpinner.classList.remove('hidden'); // Show spinner
+
+            const prompt = `Wygeneruj 3-5 pomysłów na strukturę lub tematykę dokumentu Google Drive na temat: "${input}". Skup się na elementach przydatnych w pracy zespołowej.`;
+            let chatHistory = [];
+            chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+
+            const payload = { contents: chatHistory };
+            const apiKey = ""; // Canvas will provide this API key at runtime
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const result = await response.json();
+
+                if (result.candidates && result.candidates.length > 0 &&
+                    result.candidates[0].content && result.candidates[0].content.parts &&
+                    result.candidates[0].content.parts.length > 0) {
+                    const text = result.candidates[0].content.parts[0].text;
+                    outputDiv.textContent = text;
+                } else {
+                    outputDiv.textContent = "Błąd: Nie udało się wygenerować pomysłów. Spróbuj ponownie.";
+                    console.error("Unexpected API response structure:", result);
+                }
+            } catch (error) {
+                outputDiv.textContent = `Błąd sieci lub serwera: ${error.message}`;
+                console.error("Fetch error:", error);
+            } finally {
+                loadingSpinner.classList.add('hidden'); // Hide spinner
+            }
+        }
+
+    </script>
+</body>
+</html>
